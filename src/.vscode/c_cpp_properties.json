@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/kth/catkin_ws_ltl/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/kth/catkin_ws_ltl/src/hebi_cpp_api_ros/include/**",
+        "/home/kth/catkin_ws_ltl/src/kth_hebi_arm/hebiros/hebiros/include/**",
+        "/home/kth/catkin_ws_ltl/src/sml_nexus_simulator/sml_nexus_gazebo/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}

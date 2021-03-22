@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <!-- Arguments -->
+  <arg name="agent_name" default="kth_hebi_arm"/>
+  <arg name="initial_ts_state_from_agent" default="False"/>
+  <arg name="pick_agent_list" default="[nexus]"/>
+  <arg name="pick_agent_load_state_guard" default="[loaded]"/>
+  <arg name="pick_region" default="s2"/>
+  <arg name="drop_agent_list" default="[turtlebot]"/>
+  <arg name="drop_region" default="s2"/> 
+
+
+  <group ns="$(arg agent_name)" >
+  <!-- Load parameters -->
+  <!-- Agent name -->
+  <param name="agent_name" type="string" value="$(arg agent_name)" />
+  <!-- hard and soft task parameters -->
+  <rosparam command="load" file="$(find ltl_automaton_6dof_hebi_arm)/config/6dof_hebi_ltl_formula.yaml" />
+  <!-- Transition system -->
+  <param name="transition_system_textfile" type="str" textfile="$(find ltl_automaton_6dof_hebi_arm)/config/6dof_hebi_ts.yaml" />
+
+  <node name="pick_drop_inplace_monitor" pkg="ltl_automaton_6dof_hebi_arm" type="hebi_pick_drop_inplace_monitor.py" output="screen" >
+     <rosparam param="pick_agent_list" subst_value="True">$(arg pick_agent_list)</rosparam>
+     <rosparam param="drop_agent_list" subst_value="True">$(arg drop_agent_list)</rosparam> 
+     <rosparam param="pick_agent_load_state_guard" subst_value="True">$(arg pick_agent_load_state_guard)</rosparam>
+     <param name="pick_region" type="string" value="$(arg pick_region)"/>
+     <param name="drop_region" type="string" value="$(arg drop_region)"/> 
+  </node>
+  
+
+  <!-- Run LTL planner node -->
+  <include file="$(find ltl_automaton_planner)/launch/ltl_planner.launch" >
+    <arg name="initial_ts_state_from_agent" default="False"/>
+  </include>
+
+  <!-- Run Hebi LTL node with the 6d pose region monitor-->
+  <!-- <remap from="command/joint_state" to="/hebiros/arm_group/command/joint_state"/> -->
+  <!-- <remap from="feedback/joint_state" to="hebiros/arm_group/feedback/joint_state"/> -->
+
+  <node name="ltl_automaton_hebi_node" pkg="ltl_automaton_6dof_hebi_arm" type="ltl_automaton_hebi_node.py" output="screen" />
+  <node name="$(arg agent_name)_region_6d_jointspace_monitor" pkg="ltl_automaton_std_transition_systems" type="region_6d_jointspace_monitor.py" output="screen" />
+
+  <node name="$(arg agent_name)_load_monitor" pkg="ltl_automaton_6dof_hebi_arm" type="hebi_load_monitor.py" output="screen" />
+ </group>
+
+ 
+
+  <!-- <arg name="loaded_state" default="loaded"/>
+  <node pkg="rostopic" type="rostopic" name="hebi_load_monitor" args="pub /current_load_state std_msgs/String $(arg loaded_state)" output="screen"/> -->
+</launch>

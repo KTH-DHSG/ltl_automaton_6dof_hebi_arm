@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   ltl_automaton_msgs
   ltl_automaton_planner
   ltl_automaton_std_transition_systems
+  rospy
 )
 
 ## System dependencies are found with CMake's conventions

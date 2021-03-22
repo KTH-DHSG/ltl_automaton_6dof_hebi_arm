@@ -1,0 +1,92 @@
+# TS definitions are to be interpreted by the agent node. The LTL core planner only uses the node names, connections, weights, and action names to build its automaton.
+#
+# Possible TS types:
+#   6d_jointspace_region (6d joint position: joint name, joint position)
+#   hebi_load
+
+# Need test. Circular type could be changed. related to region_6d_jointspace_monitor.py under tl_automaton_std_transition_systems package
+
+state_dim: ["6d_jointspace_region", "hebi_load"]
+state_models:
+    6d_jointspace_region:
+        ts_type: "6d_jointspace_region"
+        initial: "home"
+        nodes: 
+            home:
+                attr:
+                    type: "circular"
+                    position: [0.1727004498243332, 1.1392163038253784, 2.146705389022827, 2.866239547729492, -1.5402566194534302, 0.4419786334037781]
+                    radius: 0.05
+                    hysteresis: 0.01
+                connected_to:
+                    home: "goto_home"
+                    pick_ready: "goto_pick_ready" 
+                    drop_ready: "goto_drop_ready"
+            pick_ready:
+                attr:
+                    type: "circular"
+                    position: [1.4664393663406372, 1.1396021842956543, 2.3574469089508057, 3.0291690826416016, -1.587478756904602, 0.1931125521659851]
+                    radius: 0.05
+                    hysteresis: 0.01
+                connected_to:
+                    pick_ready: "goto_pick_ready"
+                    home: "goto_home"
+            drop_ready:
+                attr:
+                    type: "circular"
+                    position: [-0.5599199533462524, 0.851489245891571, 2.21124005317688, 3.095844268798828, -1.6593201160430908, 0.12772037088871002]
+                    radius: 0.05
+                    hysteresis: 0.01
+                connected_to:
+                    home: "goto_home" 
+                    drop_ready: "goto_drop_ready"
+    hebi_load:
+        ts_type: "hebi_load"
+        initial: "loaded"
+        nodes:
+            unloaded:
+                connected_to:
+                    loaded: "pick"
+                    # unloaded: "idle"
+            loaded:
+                connected_to:
+                    # loaded: "idle"
+                    unloaded: "drop"
+
+actions:
+    goto_home:
+        type: "move"
+        weight: 10
+        guard: "1"
+        attr:
+            jointposition: [0.1727004498243332, 1.1392163038253784, 2.146705389022827, 2.866239547729492, -1.5402566194534302, 0.4419786334037781]
+    goto_pick_ready:
+        type: "move"
+        weight: 10
+        guard: "1"
+        attr:
+            jointposition: [1.4664393663406372, 1.1396021842956543, 2.3574469089508057, 3.0291690826416016, -1.587478756904602, 0.1931125521659851]
+    goto_drop_ready:
+        type: "move"
+        weight: 10
+        guard: "1"
+        attr:
+            jointposition: [-0.5599199533462524, 0.851489245891571, 2.21124005317688, 3.095844268798828, -1.6593201160430908, 0.12772037088871002]
+    pick:
+        type: "hebi_pick"
+        weight: 10
+        guard: "pick_ready"
+        attr:
+            jointpositionlist: [[1.4664393663406372, 1.1396021842956543, 2.3574469089508057, 3.0291690826416016, -1.587478756904602, 0.1931125521659851],[1.3726201057434082, 0.9174524545669556, 2.23972487449646, 2.995237350463867, -1.5628163814544678, -0.07922732830047607]]
+    drop:
+        type: "hebi_drop"
+        weight: 10
+        guard: "drop_ready"
+        attr:
+            jointpositionlist: [[-0.5599199533462524, 0.851489245891571, 2.21124005317688, 3.095844268798828, -1.6593201160430908, 0.12772037088871002],[-0.6008405089378357, 0.5572142004966736, 2.0360450744628906, 3.0954856872558594, -1.5395339727401733, 0.1408339887857437]]
+    # idle:
+    #     type: "hebi_idle"
+    #     weight: 10
+    #     guard: "1"
+             
+
